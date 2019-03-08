@@ -57,6 +57,7 @@ echo complete -C \'${COMPLETER_DIR}\' aws >> ~/.bashrc
 source ~/.bashrc
 
 
+mkdir -p ~/.aws
 echo "[default]" > ~/.aws/config
 echo "region = eu-west-3" >> ~/.aws/config
 
@@ -66,6 +67,14 @@ echo "aws_access_key_id = ${AWS_ACCESS_KEY}" >> ~/.aws/credentials
 echo "aws_secret_access_key = ${AWS_SECRET_KEY}" >> ~/.aws/credentials
 
 
+echo "================"
+echo "Install aws-iam-authenticator"
+echo "================"
+
+curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
+chmod +x ./aws-iam-authenticator
+sudo mv ./aws-iam-authenticator /usr/bin/aws-iam-authenticator 
+sudo chown root:root /usr/bin/aws-iam-authenticator
 
 
 
