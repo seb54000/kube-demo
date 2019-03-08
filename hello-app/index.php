@@ -1,0 +1,156 @@
+<?php
+$maintenance_mode = getenv('MAINTENANCE_MODE');
+
+if ($maintenance_mode === "On") {
+echo <<<END
+<html>
+<head>
+<title>Hello App is in maintenance mode</title>
+</head>
+<body>
+<h1>Hello App is in maintenance mode</h1>
+<h2>Please retry in a few minutes</h2>
+</body>
+</html>
+END;
+  exit;
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello World</title>
+<link href="data:image/png;base64,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" rel="icon" type="image/png" />
+<style>
+body {
+  margin: 0px;
+  font: 20px 'RobotoRegular', Arial, sans-serif;
+  font-weight: 100;
+  height: 100%;
+  color: #0f1419;
+}
+div.info {
+  display: table;
+  background: #e8eaec;
+  padding: 20px 20px 20px 20px;
+  border: 1px dashed black;
+  border-radius: 10px;
+  margin: 0px auto auto auto;
+}
+div.info p {
+    display: table-row;
+    margin: 5px auto auto auto;
+}
+div.info p span {
+    display: table-cell;
+    padding: 10px;
+}
+img {
+    width: 176px;
+    margin: 36px auto 36px auto;
+    display:block;
+}
+div.smaller p span {
+    color: #3D5266;
+}
+h1, h2 {
+  font-weight: 100;
+}
+div.check {
+    padding: 0px 0px 0px 0px;
+    display: table;
+    margin: 36px auto auto auto;
+    font: 12px 'RobotoRegular', Arial, sans-serif;
+}
+#footer {
+    position: fixed;
+    bottom: 36px;
+    width: 100%;
+}
+#center {
+    width: 400px;
+    margin: 0 auto;
+    font: 12px Courier;
+}
+
+</style>
+<script>
+var ref;
+function checkRefresh(){
+    if (document.cookie == "refresh=1") {
+        document.getElementById("check").checked = true;
+        ref = setTimeout(function(){location.reload();}, 1000);
+    } else {
+    }
+}
+function changeCookie() {
+    if (document.getElementById("check").checked) {
+        document.cookie = "refresh=1";
+        ref = setTimeout(function(){location.reload();}, 1000);
+    } else {
+        document.cookie = "refresh=0";
+        clearTimeout(ref);
+    }
+}
+</script>
+</head>
+<body onload="checkRefresh();">
+<img alt="NGINX Logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWAAAABICAMAAAD/N9+RAAAAVFBMVEUAAAAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQAAmQDBect+AAAAG3RSTlMAB0AY8SD5SM82v1npsJ/YjSl0EVLftqllgMdZgsoQAAAHd0lEQVR42szZ6XabMBCG4ZGFxSazLzZz//fZc9I4JpbEN8LQ0/dnGwJ5DJGG0HdpM9kkuzVXiqussmRpLrRdnwqDp9ePyY7zXdFbqptHOz00RTVUxWiyquvJ26Upknp2/heWN0Uyzt3qYtKMn805ybsW/LdK01YVC6sVELH81XJ9o6j5q6Qkcepe83dJp8ipf161HSgm1TyPK5//cuN1d5KmE342bsnkLK6hre78LNG0KuWfOrFDwats69w8ln+qFIlrx9Vxf8808e8eJGx9YEXhCpZ3kX2gfFtbrX4m05IonTE7wsGLnpXY1/Kqr3v/5r+NcAOvy8HXCRt74W+alH568KqCJKmM37LafVhe3ZTU1/mmA7uV9Ar8vPjZVCPDZI+CDdwFC68yIooZnbhmIAx8XyoZu5mcYO9HzhSo47gGCqR53ULPlAGPkuyazJVeKWYsjH15Djy/VhPO8LoM/OJE4XNfeJ19LUfRj18KF9gLA2GZL4/UsLdFHQVccWyTCDjZD9wm7Kt2PgIgjH3ZBlf46iDgnOO7nwusavZmVoCaPU0q1pcnshyoOwa44PiS66nANw7U0isbK5x7j3gQB0uPAB54T8WZwA/RHrxhLIx9TbsBnLSfA6uRd9WdBzywCFiNUcJ5wr4eRByu7j8G7nhfpj0LuE0A8OtsSBj7ZooIL+dyYLxFm27+EvfSzgHua/GYXrK3Qol9a03bwNxEAeMt2ix/bptzgCeGwFhY7ouAufwIOA/PSni3nJ8B3DAElgtjXwxs8k+Al/BdiVfDWh0PPDAAjhXGvgTnVjkwujzbk1t4TWkOB24TBBwrjH2JQZnaC6xGsPdCT296MHA/MgKWC2NfL7Blp2ov8AM88/gNbX8osCrc5xMAA2Ho6wIXHTt1+4C1iZwMW8NvzYcCN67vAICBMPZ1galip3QXcAXHXzyVlB8AYyiT5wAYCWNfF1gtYGYWAufhNynyTWqiDwPOjeelnQiYShMQBr5+YNIWzMwy4CX69afv1NNRwHr07FKEwDT4hTPs6wL7P+tCxQKXm/eifJ963wmMF7hCYWBXGJdpAsBUopkZAyv3j3+i9PUtTa/U9VcAGC1wmgAwFsa+LnBooLxj4K0t2qjo8AAwWuAIAO8TznoSANMEZmYErA14p3EyMF7gSgLAQBj4ImBVg5kZAM/8u4VAJwJ7l+2GADAQBr4A2D+1Z0oMnKM3Y2cD4wUOAANh5IuB6cJOsxg4Q0eeCwwXuFETBnZLDfSVA1NwZsbAJXwN/C+B7771BAAjYeyLgX0z8yACVlawx1NaXh+5TcMLHACGwtgXA6OZ2QUObdGsorfabjIsr4wcNOACB4CBMPLFwOHpcuwx8NWgLXTJURW0H1gtngUOA8cLLz1FAsOZWQ4MfFH5B8CV7x75b4D/NHduS47CMBCVwYFAiDEmCQT+/z/3ZWumah1otZdL/MxMZc5gybJanU8tLI9DhF8PESXJ10k64PAxyn1LiPisMhr/N8kNHF+bpwPOis95+juS3IJOrsgQYBlXj2mWFVHRgHGC+4pj2kKjbG4ufKGRLmdtTTJgc12WKn1BofE7zBTXzAhwtlIqP9h5gmTAbq1xcHqpvBbHBgRY7suXPTl/ROMB4wR36mUPKjXnNwLcrVxXXimRZTLgDBSiZ15XYj3XAwAWv3zh7gnAXtIAx6Etnq888cIdX/fZDgDul1tGvf4Vtn0S4M8J7i7ROq1lhCVHzzwGvBpYbJ5AOEgq4EEzZn5K01MrmqvNOmDTLrft+8FSRzQecFBpO05p26tlnw7oIso14YnJ3i5aL6DF0wMuleqkM4Qn+smcAKRTL1Y65UDQVAO+WK2+7gTplH54usjWAXek+K+LCuxEwGMLul0R4EPFfz8L18zzKmDxIKSCN95LIuBGr3GujpevErqxGQDuLaPuyUAfBAPGg6Mx4OME2DhQVgUJWAIzQnBFfRAeMI5N1XEjBBiwjCxg0+qHYG7wt/GA8capDh+CqYkpCoykjPKWesio2gywEwD4qDEuDNjUJGCptQqUAB5MB3w1APBhg4gYsPQtCbib00Zpi3wrwM1FAOBjR2lrZBXCARY3J623bAS4yAQAPnIYHAOWkgSc2xS+T7MV4CAA8LF2BhiwBAwYP4+lPBsBdgIAH2XIgQHjTf+SrRw5auEAG5Dg9ID3t5TBgM3EWR88eMAVCVieYM5aDXgHUyQAmKiZR9nIFckJC/gFnALUgHew9QKAiZq5A3+EXspDAw7gP64GvIcxXQvfHl2B7tiozSf+y1JSNQ31gRYDQb6HteKQ4B3s4QucflRrDW8OKiHBujCO3s0u5qAjwKR0vnkDozL1emgd5W6EWa1ud7l97G0n3jhYzACOEMlHtVpjeBA/mLf/7IOoQsa7y+b7GDR3Rbw98fKQLy+5xv7VIXowIhy1ztUfbdzLYrz7cbrvRb/K+nf7wPPQpAXsEQ/7l2AXW97/AGkCwaNsIif8zU3y5eZaO/mK/jKDV1s872/Fz11K5TLE1zzEiP1km8ndDMcj3JvmFfqdvubhD8TgHPiN+LViAAAAAElFTkSuQmCC"/>
+<div class="info">
+<p><span>Server&nbsp;address:</span> <span><?php echo $_SERVER['SERVER_ADDR']; ?></span></p>
+<p><span>Server&nbsp;name:</span> <span><?php echo gethostname(); ?></span></p>
+<p class="smaller"><span>Date:</span> <span><?php date_default_timezone_set('UTC'); echo date(DATE_RFC2822); ?></span></p>
+<p class="smaller"><span>URI:</span> <span><?php echo $_SERVER['REQUEST_URI']; ?></span></p>
+<p class="smaller"><span>CLUSTER NAME:</span> <span><?php echo getenv('CLUSTER_NAME'); ?></span></p>
+</div>
+<div class="check"><input type="checkbox" id="check" onchange="changeCookie()"> Auto Refresh</div>
+    <div id="footer">
+        <div id="center" align="center">
+            Request ID: request_id<br/>
+            &copy; NGINX, Inc. 2018
+        </div>
+    </div>
+</body>
+</html>
+
+<?php
+// Log file for filebeat sidecar in emptyDir
+$filename = '/var/www/html/filebeat/hello-app.log';
+
+if ( rand(0, 10) > 8) {
+	$content =  "ERROR " . date(DATE_RFC2822) . " HELLO-APP Problem with transaction " . rand(3499, 78345) . " was rollbacked Component [transact] \n";
+} else {
+	$content =  "INFO " . date(DATE_RFC2822) . " HELLO-APP Successful transaction " . rand(3499, 78345) . " Component [transact] \n";
+}
+
+if ($handle = fopen($filename, 'a')) {
+   fwrite($handle, $content);
+}
+fclose($handle);
+
+//Same log file in data dir for PVC test and restore
+$filename = '/var/www/html/data/hello-app.log';
+if ($handle = fopen($filename, 'a')) {
+   fwrite($handle, $content);
+}
+fclose($handle);
+
+// Get labels of the pod
+$label_file="/etc/podinfo/labels";
+$labels = str_replace("\n", "" ,join(",",file("$label_file")));
+// replace - by _ as they are badly supported in prometheus keys, values are OK still
+$labels = str_replace("-", "_" , $labels);
+
+// Prometheus Metric
+$filename = '/var/www/html/data/prom/hello.prom';
+if ($handle = fopen($filename, 'w')) {
+   fwrite($handle, "# HELP hello_processing_time The total time in miliseconds to process\n");
+   fwrite($handle, "# TYPE hello_processing_time gauge\n");
+   $content = "hello_processing_time{component=\"hello-app\",namespace=\"" . getenv('MY_POD_NAMESPACE') . "\",pod_name=\"" . getenv('MY_POD_NAME') . "\"$labels} " . rand(337, 3578). "\n";
+   fwrite($handle, $content);
+}
+fclose($handle);
+
+
+?>

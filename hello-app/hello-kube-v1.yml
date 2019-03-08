@@ -1,0 +1,82 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hello-app
+  namespace: kube-kubedemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-app
+  template:
+    metadata:
+      labels:
+        app: hello-app
+        version: "1.0"
+        hostedby: kube-clu4
+    spec:
+      containers:
+      - name: hello-app
+        image: kube.registry/hello-app:v1
+        imagePullPolicy: Always
+        env:
+        - name: CLUSTER_NAME
+          value: "kube-clu4"
+        - name: MAINTENANCE_MODE
+          value: "Off"
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: podinfo
+          mountPath: /etc/podinfo
+          readOnly: false
+      volumes:
+      - name: podinfo
+        downwardAPI:
+          items:
+            - path: "labels"
+              fieldRef:
+                fieldPath: metadata.labels
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-app-svc
+  namespace: kube-kubedemo
+  labels:
+    app: hello-app
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  selector:
+    app: hello-app
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello-app-ing
+  namespace: kube-kubedemo
+spec:
+  rules:
+  - host: hello-app.kube
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: hello-app-svc
+          servicePort: http
+  tls:
+  - hosts:
+    - hello-app.kube
+---
