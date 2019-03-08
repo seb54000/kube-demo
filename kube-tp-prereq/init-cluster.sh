@@ -5,11 +5,16 @@ CLUSTER_NAME="kube-tp"
 echo "This script has been tested only on 16.04.1-Ubuntu"
 echo "Root password would be asked for sudo commands"
 
-echo "We need an AWS IAM admin role access key"
-echo "Please enter aws_access_key :"
-read AWS_ACCESS_KEY
-echo "Please enter aws_secret_key :"
-read -s AWS_SECRET_KEY
+FILE="$HOME/.aws/config"     
+if [ -f $FILE ]; then
+   AWS_EXIST=1
+else
+	echo "We need an AWS IAM admin role access key"
+	echo "Please enter aws_access_key :"
+	read AWS_ACCESS_KEY
+	echo "Please enter aws_secret_key :"
+	read -s AWS_SECRET_KEY
+fi
 
 echo "================"
 echo "Install Docker"
@@ -31,7 +36,6 @@ sudo add-apt-repository \
    $(lsb_release -cs) \
    stable"
 
-sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
 sudo groupadd docker
@@ -45,7 +49,6 @@ echo "================"
 echo "Install AWS cli and configure credentials"
 echo "================"
 
-sudo apt install -y curl
 curl -O https://bootstrap.pypa.io/get-pip.py
 python get-pip.py --user
 pip install awscli --upgrade --user
@@ -56,16 +59,15 @@ echo export PATH=${COMPLETER_DIR}:\$PATH >> ~/.bashrc
 echo complete -C \'${COMPLETER_DIR}\' aws >> ~/.bashrc
 source ~/.bashrc
 
+if [ -z "$var" ]; then
+	mkdir -p ~/.aws
+	echo "[default]" > ~/.aws/config
+	echo "region = eu-west-3" >> ~/.aws/config
 
-mkdir -p ~/.aws
-echo "[default]" > ~/.aws/config
-echo "region = eu-west-3" >> ~/.aws/config
-
-
-echo "[default]" > ~/.aws/credentials
-echo "aws_access_key_id = ${AWS_ACCESS_KEY}" >> ~/.aws/credentials
-echo "aws_secret_access_key = ${AWS_SECRET_KEY}" >> ~/.aws/credentials
-
+	echo "[default]" > ~/.aws/credentials
+	echo "aws_access_key_id = ${AWS_ACCESS_KEY}" >> ~/.aws/credentials
+	echo "aws_secret_access_key = ${AWS_SECRET_KEY}" >> ~/.aws/credentials
+fi
 
 echo "================"
 echo "Install aws-iam-authenticator"
@@ -92,8 +94,7 @@ echo "================"
 echo "Install kubectl and verify cluster access"
 echo "================"
 
-sudo apt-get update && sudo apt-get install -y apt-transport-https
-sudo apt-get install -y curl
+sudo apt-get install -y apt-transport-https
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
