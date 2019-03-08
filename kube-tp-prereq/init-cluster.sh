@@ -59,7 +59,7 @@ echo export PATH=${COMPLETER_DIR}:\$PATH >> ~/.bashrc
 echo complete -C \'${COMPLETER_DIR}\' aws >> ~/.bashrc
 source ~/.bashrc
 
-if [ -z "$var" ]; then
+if [ -z "$AWS_EXIST" ]; then
 	mkdir -p ~/.aws
 	echo "[default]" > ~/.aws/config
 	echo "region = eu-west-3" >> ~/.aws/config
