@@ -1,6 +1,11 @@
 #!/bin/bash
 
-CLUSTER_NAME="kube-tp"
+
+if [ -z "$1" ]; then
+	echo "Usage : init=cluster.sh <cluster=name>"
+else
+	CLUSTER_NAME="$1"
+fi
 
 echo "This script has been tested only on 16.04.1-Ubuntu"
 echo "Root password would be asked for sudo commands"
@@ -78,6 +83,12 @@ chmod +x ./aws-iam-authenticator
 sudo mv ./aws-iam-authenticator /usr/bin/aws-iam-authenticator 
 sudo chown root:root /usr/bin/aws-iam-authenticator
 
+
+echo "================"
+echo "Ensure the ELB Service Role exists"
+echo "================"
+
+aws iam get-role --role-name "AWSServiceRoleForElasticLoadBalancing" || aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
 
 
 echo "================"
