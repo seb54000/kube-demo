@@ -5,8 +5,10 @@
 ### Write the data in a persistent volume claim
 
 ```bash
+ELB=$(kubectl get service -n kube-kubedemo hello-app-svc -o json | jq -r '.status.loadBalancer.ingress[].hostname')
+
 # Let's see the data written in log file in container
-for i in {1..5}; do curl -ks https://hello-app. > /dev/null; done
+for i in {1..5}; do curl -ks http://${ELB} > /dev/null; done
 kubectl exec -it $(kubectl get po -l app=hello-app -o jsonpath={.items..metadata.name}) -- tail /var/www/html/data/hello-app.log
 
 # If we kill the pod, the data are lost
@@ -21,7 +23,7 @@ kubectl get pvc
 kubectl apply -f hello-kube-v2-pvc.yml
 
 # Now check again if data are lost ?
-for i in {1..5}; do curl -ks https://hello-app > /dev/null; done
+for i in {1..5}; do curl -ks http://${ELB} > /dev/null; done
 kubectl exec -it $(kubectl get po -l app=hello-app -o jsonpath={.items..metadata.name}) -- tail /var/www/html/data/hello-app.log
 kubectl delete po $(kubectl get po -l app=hello-app -o jsonpath={.items..metadata.name})
 kubectl exec -it $(kubectl get po -l app=hello-app -o jsonpath={.items..metadata.name}) -- tail /var/www/html/data/hello-app.log
