@@ -15,6 +15,7 @@ sudo docker push <your-docker-registry>/hello-app:v1
 
 # Create Namespace
 kubectl create ns kube-kubedemo
+kubectl config set-context --namespace=kube-kubedemo --current
 # Deploy our app on Kubernetes
 kubectl apply -f hello-kube-v1.yml
 ```
