@@ -1,6 +1,6 @@
 ## kube-demo deploy
 
-*[Back to README.md](https://github.com/seb54000/kube-demo/tree/master/hello-app/README.md)*
+*[Back to README.md](https://github.com/seb54000/kube-demo/blob/master/README.md)*
 
 ### Write the data in a persistent volume claim
 
@@ -48,4 +48,4 @@ kubectl cp backup.tgz $(kubectl get po -l app=hello-app -o jsonpath={.items..met
 kubectl exec -it $(kubectl get po -l app=hello-app -o jsonpath={.items..metadata.name}) -- tar xzf backup.tgz
 ```
 
-*[Back to README.md](https://github.com/seb54000/kube-demo/tree/master/hello-app/README.md)*
+*[Back to README.md](https://github.com/seb54000/kube-demo/blob/master/README.md)*
