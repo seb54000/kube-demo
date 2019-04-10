@@ -61,7 +61,7 @@ echo "================"
 echo "Install AWS cli and configure credentials"
 echo "================"
 
-if [ $(which aws --version) -eq 0 ];then
+if aws --version;then
 	echo "awscli already installed"
 else
 	curl -O https://bootstrap.pypa.io/get-pip.py
@@ -89,7 +89,7 @@ echo "================"
 echo "Install aws-iam-authenticator"
 echo "================"
 
-if [ $(which aws-iam-authenticator) -eq 0 ];then
+if which aws-iam-authenticator;then
 	echo "aws-iam-authenticator already installed"
 else
 	curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
@@ -109,7 +109,7 @@ echo "================"
 echo "Install kubectl"
 echo "================"
 
-if [ $(which kubectl) -eq 0 ];then
+if which kubectl;then
 	echo "kubectl already installed"
 else
 	sudo apt-get install -y apt-transport-https
