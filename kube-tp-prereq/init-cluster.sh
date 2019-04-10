@@ -13,6 +13,12 @@ echo "Root password would be asked for sudo commands"
 FILE="$HOME/.aws/config"     
 if [ $2 == "cred-config" ]; then
    CRED_CONFIG=1
+   	echo "You want to change or reload your admin keys"
+   	echo "We need an AWS IAM admin role access key"
+	echo "Please enter aws_access_key :"
+	read AWS_ACCESS_KEY
+	echo "Please enter aws_secret_key :"
+	read -s AWS_SECRET_KEY
 elif [ -f $FILE ]; then
 	AWS_EXIST=1
 else
@@ -25,6 +31,25 @@ fi
 
 if [ $2 == "use-cluster" ]; then
 	USE_CLUSTER=1
+fi
+
+echo "================"
+echo "Configure AWScli credentials"
+echo "================"
+
+	mkdir -p ~/.aws
+	echo "[default]" > ~/.aws/config
+	echo "region = eu-west-3" >> ~/.aws/config
+
+if [ -z "$AWS_EXIST" ] || [ ${CRED_CONFIG} -eq 1 ]; then
+	echo "[default]" > ~/.aws/credentials
+	echo "aws_access_key_id = ${AWS_ACCESS_KEY}" >> ~/.aws/credentials
+	echo "aws_secret_access_key = ${AWS_SECRET_KEY}" >> ~/.aws/credentials
+
+	if [ ${CRED_CONFIG} -eq 1 ]; then
+		echo "Your awsconfig cli credentials are changed, please use or relaunch the script with differetn options to use-cluster or nothing to create it"
+		exit 0
+	fi
 fi
 
 echo "================"
@@ -73,16 +98,6 @@ else
 	echo export PATH=${COMPLETER_DIR}:\$PATH >> ~/.bashrc
 	echo complete -C \'${COMPLETER_DIR}\' aws >> ~/.bashrc
 	source ~/.bashrc
-fi
-
-	mkdir -p ~/.aws
-	echo "[default]" > ~/.aws/config
-	echo "region = eu-west-3" >> ~/.aws/config
-
-if [ -z "$AWS_EXIST" ] || [ ${CRED_CONFIG} -eq 1 ]; then
-	echo "[default]" > ~/.aws/credentials
-	echo "aws_access_key_id = ${AWS_ACCESS_KEY}" >> ~/.aws/credentials
-	echo "aws_secret_access_key = ${AWS_SECRET_KEY}" >> ~/.aws/credentials
 fi
 
 echo "================"
