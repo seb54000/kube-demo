@@ -144,12 +144,18 @@ echo "================"
 
 if [ ! -z $USE_CLUSTER ];then
 	echo "use cluster mode -- do not create via eksctl"
-	export EKS_ENDPOINT=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[endpoint] --output=text)
-	export EKS_CA_DATA=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[certificateAuthority.data] --output text)
-	echo EKS_ENDPOINT=${EKS_ENDPOINT}
-	echo EKS_CA_DATA=${EKS_CA_DATA}
+else
+	curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+	sudo mv -v /tmp/eksctl /usr/local/bin
+	eksctl create cluster --name=${CLUSTER_NAME} --nodes=3 --node-ami=auto
+fi
 
-	mkdir -p ${HOME}/.kube
+export EKS_ENDPOINT=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[endpoint] --output=text)
+export EKS_CA_DATA=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[certificateAuthority.data] --output text)
+echo EKS_ENDPOINT=${EKS_ENDPOINT}
+echo EKS_CA_DATA=${EKS_CA_DATA}
+
+mkdir -p ${HOME}/.kube
 
 cat <<EoF > ${HOME}/.kube/${CLUSTER_NAME}
   apiVersion: v1
@@ -177,13 +183,10 @@ cat <<EoF > ${HOME}/.kube/${CLUSTER_NAME}
           - "-i"
           - "${CLUSTER_NAME}"
 EoF
-	export KUBECONFIG=${HOME}/.kube/config-eksworkshop-cf
-	echo "export KUBECONFIG=${KUBECONFIG}" >> ${HOME}/.bashrc
-else
-	curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-	sudo mv -v /tmp/eksctl /usr/local/bin
-	eksctl create cluster --name=${CLUSTER_NAME} --nodes=3 --node-ami=auto
-fi
+
+export KUBECONFIG=${HOME}/.kube/config-eksworkshop-cf
+echo "export KUBECONFIG=${KUBECONFIG}" >> ${HOME}/.bashrc
+
 
 echo "================"
 echo "Verify cluster access"
