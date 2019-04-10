@@ -79,11 +79,14 @@ echo "================"
 echo "Install aws-iam-authenticator"
 echo "================"
 
-curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
-chmod +x ./aws-iam-authenticator
-sudo mv ./aws-iam-authenticator /usr/bin/aws-iam-authenticator 
-sudo chown root:root /usr/bin/aws-iam-authenticator
-
+if [ $(which aws-iam-authenticator) -eq 0 ];then
+	echo "aws-iam-authenticator already installed"
+else
+	curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator
+	chmod +x ./aws-iam-authenticator
+	sudo mv ./aws-iam-authenticator /usr/bin/aws-iam-authenticator 
+	sudo chown root:root /usr/bin/aws-iam-auechothenticator
+fi
 
 echo "================"
 echo "Ensure the ELB Service Role exists"
@@ -106,14 +109,18 @@ echo "================"
 echo "Install kubectl and verify cluster access"
 echo "================"
 
-sudo apt-get install -y apt-transport-https
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
-sudo apt-get update
-sudo apt-get install -y kubectl
-# Installing kubectl bash completion on Linux
-kubectl completion bash >> ~/.bashrc
-source ~/.bashrc
+if [ $(which kubectl) -eq 0 ];then
+	echo "kubectl already installed"
+else
+	sudo apt-get install -y apt-transport-https
+	curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+	echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+	sudo apt-get update
+	sudo apt-get install -y kubectl
+	# Installing kubectl bash completion on Linux
+	kubectl completion bash >> ~/.bashrc
+	source ~/.bashrc
+fi
 
 kubectl cluster-info
 kubectl get no
