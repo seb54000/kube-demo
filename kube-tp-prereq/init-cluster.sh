@@ -11,7 +11,7 @@ echo "This script has been tested only on 16.04.1-Ubuntu"
 echo "Root password would be asked for sudo commands"
 
 FILE="$HOME/.aws/config"     
-if [ $2 = "cred-config" ]; then
+if [ $2 == "cred-config" ]; then
    CRED_CONFIG=1
 elif [ -f $FILE ]; then
 	AWS_EXIST=1
@@ -21,6 +21,10 @@ else
 	read AWS_ACCESS_KEY
 	echo "Please enter aws_secret_key :"
 	read -s AWS_SECRET_KEY
+fi
+
+if [ $2 == "use-cluster" ]; then
+	USE_CLUSTER=1
 fi
 
 echo "================"
@@ -123,7 +127,7 @@ echo "Create EKS cluster or use it"
 echo "================"
 
 
-if [ $(which kubectl) -eq 0 ];then
+if [ $USE_CLUSTER -eq 1 ];then
 	echo "use cluster mode -- do not create via eksctl"
 	export EKS_ENDPOINT=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[endpoint] --output=text)
 	export EKS_CA_DATA=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[certificateAuthority.data] --output text)
