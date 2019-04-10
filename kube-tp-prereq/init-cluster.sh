@@ -7,6 +7,8 @@ else
 	CLUSTER_NAME="$1"
 fi
 
+export CLUSTER_NAME=${CLUSTER_NAME}
+
 echo "This script has been tested only on 16.04.1-Ubuntu"
 echo "Root password would be asked for sudo commands"
 
@@ -153,7 +155,6 @@ fi
 export EKS_ENDPOINT=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[endpoint] --output=text)
 export EKS_CA_DATA=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[certificateAuthority.data] --output text)
 echo EKS_ENDPOINT=${EKS_ENDPOINT}
-echo EKS_CA_DATA=${EKS_CA_DATA}
 
 mkdir -p ${HOME}/.kube
 
@@ -184,7 +185,7 @@ cat <<EoF > ${HOME}/.kube/${CLUSTER_NAME}
           - "${CLUSTER_NAME}"
 EoF
 
-export KUBECONFIG=${HOME}/.kube/config-eksworkshop-cf
+export KUBECONFIG=${HOME}/.kube/${CLUSTER_NAME}
 echo "export KUBECONFIG=${KUBECONFIG}" >> ${HOME}/.bashrc
 
 
