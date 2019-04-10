@@ -41,7 +41,7 @@ echo "================"
 	echo "[default]" > ~/.aws/config
 	echo "region = eu-west-3" >> ~/.aws/config
 
-if [ -z "$AWS_EXIST" ] || [ ${CRED_CONFIG} -eq 1 ]; then
+if [ -z "$AWS_EXIST" ] || [ ! -z ${CRED_CONFIG} ]; then
 	echo "[default]" > ~/.aws/credentials
 	echo "aws_access_key_id = ${AWS_ACCESS_KEY}" >> ~/.aws/credentials
 	echo "aws_secret_access_key = ${AWS_SECRET_KEY}" >> ~/.aws/credentials
@@ -142,7 +142,7 @@ echo "Create EKS cluster or use it"
 echo "================"
 
 
-if [ $USE_CLUSTER -eq 1 ];then
+if [ ! -z $USE_CLUSTER ];then
 	echo "use cluster mode -- do not create via eksctl"
 	export EKS_ENDPOINT=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[endpoint] --output=text)
 	export EKS_CA_DATA=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[certificateAuthority.data] --output text)
