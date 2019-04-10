@@ -2,7 +2,7 @@
 
 
 if [ -z "$1" ]; then
-	echo "Usage : init=cluster.sh <cluster=name>"
+	echo "Usage : init=cluster.sh <cluster=name> [cred-config] [use-cluster]"
 else
 	CLUSTER_NAME="$1"
 fi
@@ -11,8 +11,10 @@ echo "This script has been tested only on 16.04.1-Ubuntu"
 echo "Root password would be asked for sudo commands"
 
 FILE="$HOME/.aws/config"     
-if [ -f $FILE ]; then
-   AWS_EXIST=1
+if [ $2 = "cred-config" ]; then
+   CRED_CONFIG=1
+elif [ -f $FILE ]; then
+	AWS_EXIST=1
 else
 	echo "We need an AWS IAM admin role access key"
 	echo "Please enter aws_access_key :"
@@ -55,21 +57,25 @@ echo "================"
 echo "Install AWS cli and configure credentials"
 echo "================"
 
-curl -O https://bootstrap.pypa.io/get-pip.py
-python get-pip.py --user
-pip install awscli --upgrade --user
+if [ $(which aws --version) -eq 0 ];then
+	echo "awscli already installed"
+else
+	curl -O https://bootstrap.pypa.io/get-pip.py
+	python get-pip.py --user
+	pip install awscli --upgrade --user
 
-# install aws CLI completion
-COMPLETER_DIR=$(which aws_completer)
-echo export PATH=${COMPLETER_DIR}:\$PATH >> ~/.bashrc
-echo complete -C \'${COMPLETER_DIR}\' aws >> ~/.bashrc
-source ~/.bashrc
+	# install aws CLI completion
+	COMPLETER_DIR=$(which aws_completer)
+	echo export PATH=${COMPLETER_DIR}:\$PATH >> ~/.bashrc
+	echo complete -C \'${COMPLETER_DIR}\' aws >> ~/.bashrc
+	source ~/.bashrc
+fi
 
-if [ -z "$AWS_EXIST" ]; then
 	mkdir -p ~/.aws
 	echo "[default]" > ~/.aws/config
 	echo "region = eu-west-3" >> ~/.aws/config
 
+if [ -z "$AWS_EXIST" ] || [ ${CRED_CONFIG} -eq 1 ]; then
 	echo "[default]" > ~/.aws/credentials
 	echo "aws_access_key_id = ${AWS_ACCESS_KEY}" >> ~/.aws/credentials
 	echo "aws_secret_access_key = ${AWS_SECRET_KEY}" >> ~/.aws/credentials
@@ -96,17 +102,7 @@ aws iam get-role --role-name "AWSServiceRoleForElasticLoadBalancing" || aws iam 
 
 
 echo "================"
-echo "Create EKS cluster"
-echo "================"
-
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-sudo mv -v /tmp/eksctl /usr/local/bin
-eksctl create cluster --name=${CLUSTER_NAME} --nodes=3 --node-ami=auto
-
-
-
-echo "================"
-echo "Install kubectl and verify cluster access"
+echo "Install kubectl"
 echo "================"
 
 if [ $(which kubectl) -eq 0 ];then
@@ -122,12 +118,64 @@ else
 	source ~/.bashrc
 fi
 
+echo "================"
+echo "Create EKS cluster or use it"
+echo "================"
+
+
+if [ $(which kubectl) -eq 0 ];then
+	echo "use cluster mode -- do not create via eksctl"
+	export EKS_ENDPOINT=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[endpoint] --output=text)
+	export EKS_CA_DATA=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[certificateAuthority.data] --output text)
+	echo EKS_ENDPOINT=${EKS_ENDPOINT}
+	echo EKS_CA_DATA=${EKS_CA_DATA}
+
+	mkdir -p ${HOME}/.kube
+
+cat <<EoF > ${HOME}/.kube/${CLUSTER_NAME}
+  apiVersion: v1
+  clusters:
+  - cluster:
+      server: ${EKS_ENDPOINT}
+      certificate-authority-data: ${EKS_CA_DATA}
+    name: kubernetes
+  contexts:
+  - context:
+      cluster: kubernetes
+      user: aws
+    name: aws
+  current-context: aws
+  kind: Config
+  preferences: {}
+  users:
+  - name: aws
+    user:
+      exec:
+        apiVersion: client.authentication.k8s.io/v1alpha1
+        command: heptio-authenticator-aws
+        args:
+          - "token"
+          - "-i"
+          - "${CLUSTER_NAME}"
+EoF
+	export KUBECONFIG=${HOME}/.kube/config-eksworkshop-cf
+	echo "export KUBECONFIG=${KUBECONFIG}" >> ${HOME}/.bashrc
+else
+	curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+	sudo mv -v /tmp/eksctl /usr/local/bin
+	eksctl create cluster --name=${CLUSTER_NAME} --nodes=3 --node-ami=auto
+fi
+
+echo "================"
+echo "Verify cluster access"
+echo "================"
+
 kubectl cluster-info
 kubectl get no
 
 echo "================"
 echo "Everything is OK"
-echo "If you wnat to delete cluster"
+echo "If you want to delete cluster"
 echo "eksctl delete cluster --name=${CLUSTER_NAME}"
 echo "================"
 
