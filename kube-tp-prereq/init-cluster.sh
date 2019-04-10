@@ -163,21 +163,21 @@ cat <<EoF > ${HOME}/.kube/${CLUSTER_NAME}
   - cluster:
       server: ${EKS_ENDPOINT}
       certificate-authority-data: ${EKS_CA_DATA}
-    name: kubernetes
+    name: ${CLUSTER_NAME}
   contexts:
   - context:
-      cluster: kubernetes
-      user: aws
-    name: aws
-  current-context: aws
+      cluster: ${CLUSTER_NAME}
+      user: ${CLUSTER_NAME}
+    name: ${CLUSTER_NAME}
+  current-context: ${CLUSTER_NAME}
   kind: Config
   preferences: {}
   users:
-  - name: aws
+  - name: ${CLUSTER_NAME}
     user:
       exec:
         apiVersion: client.authentication.k8s.io/v1alpha1
-        command: heptio-authenticator-aws
+        command: aws-iam-authenticator
         args:
           - "token"
           - "-i"
