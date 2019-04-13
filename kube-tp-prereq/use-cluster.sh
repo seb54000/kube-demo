@@ -12,8 +12,8 @@ export CLUSTER_NAME=${CLUSTER_NAME}
 echo "This script has been tested only on 16.04.1-Ubuntu"
 echo "Root password would be asked for sudo commands"
 
-FILE="$HOME/.aws/config"     
-if [ $2 == "cred-config" ]; then
+FILE="$HOME/.aws/credentials"     
+if [ "$2" = "cred-config" ]; then
    CRED_CONFIG=1
    	echo "You want to change or reload your admin keys"
    	echo "We need an AWS IAM admin role access key"
