@@ -2,7 +2,7 @@
 
 
 if [ -z "$1" ]; then
-	echo "Usage : init=cluster.sh <cluster=name> [cred-config] [use-cluster]"
+	echo "Usage : use-cluster.sh <cluster=name> [cred-config]"
 else
 	CLUSTER_NAME="$1"
 fi
@@ -31,9 +31,6 @@ else
 	read -s AWS_SECRET_KEY
 fi
 
-if [ $2 == "use-cluster" ]; then
-	USE_CLUSTER=1
-fi
 
 echo "================"
 echo "Configure AWScli credentials"
@@ -55,39 +52,6 @@ if [ -z "$AWS_EXIST" ] || [ ! -z ${CRED_CONFIG} ]; then
 fi
 
 echo "================"
-echo "Install Docker"
-echo "================"
-
-if docker --version;then
-        echo "docker already installed"
-else
-	sudo apt-get update -y
-	sudo apt-get upgrade -y
-	sudo apt-get install -y \
-	    apt-transport-https \
-	    ca-certificates \
-	    curl \
-	    jq \
-	    gnupg-agent \
-	    software-properties-common
-
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-	sudo add-apt-repository \
-	   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-	   $(lsb_release -cs) \
-	   stable"
-
-	sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-
-	sudo groupadd docker
-	sudo usermod -aG docker $USER
-
-	sudo systemctl enable docker
-fi
-
-
-echo "================"
 echo "Install AWS cli and configure credentials"
 echo "================"
 
@@ -95,8 +59,8 @@ if aws --version;then
 	echo "awscli already installed"
 else
 	curl -O https://bootstrap.pypa.io/get-pip.py
-	python get-pip.py --user
-	pip install awscli --upgrade --user
+	python get-pip.py --user || sudo apt install python-pip
+	pip install awscli --upgrade --user || sudo apt install awscli
 
 	# install aws CLI completion
 	COMPLETER_DIR=$(which aws_completer)
@@ -119,13 +83,6 @@ else
 fi
 
 echo "================"
-echo "Ensure the ELB Service Role exists"
-echo "================"
-
-aws iam get-role --role-name "AWSServiceRoleForElasticLoadBalancing" || aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
-
-
-echo "================"
 echo "Install kubectl"
 echo "================"
 
@@ -143,17 +100,8 @@ else
 fi
 
 echo "================"
-echo "Create EKS cluster or use it"
+echo "Use EKS cluster "
 echo "================"
-
-
-if [ ! -z $USE_CLUSTER ];then
-	echo "use cluster mode -- do not create via eksctl"
-else
-	curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-	sudo mv -v /tmp/eksctl /usr/local/bin
-	eksctl create cluster --name=${CLUSTER_NAME} --nodes=3 --node-ami=auto
-fi
 
 export EKS_ENDPOINT=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[endpoint] --output=text)
 export EKS_CA_DATA=$(aws eks describe-cluster --name ${CLUSTER_NAME}  --query cluster.[certificateAuthority.data] --output text)
