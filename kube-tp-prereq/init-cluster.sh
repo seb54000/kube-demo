@@ -95,8 +95,8 @@ if aws --version;then
 	echo "awscli already installed"
 else
 	curl -O https://bootstrap.pypa.io/get-pip.py
-	python get-pip.py --user
-	pip install awscli --upgrade --user
+	python get-pip.py --user || sudo apt install python-pip
+	pip install awscli --upgrade --user || sudo apt install awscli
 
 	# install aws CLI completion
 	COMPLETER_DIR=$(which aws_completer)
