@@ -150,8 +150,13 @@ echo "================"
 if [ ! -z $USE_CLUSTER ];then
 	echo "use cluster mode -- do not create via eksctl"
 else
-	curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-	sudo mv -v /tmp/eksctl /usr/local/bin
+	if which eksctl;then
+		echo "eksctl already installed"
+	else
+		curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+		curl https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz | tar xz -C /tmp	
+		sudo mv -v /tmp/eksctl /usr/local/bin
+	fi
 	eksctl create cluster --name=${CLUSTER_NAME} --nodes=3 --node-ami=auto
 fi
 
